@@ -34,6 +34,7 @@ public class IntelliDroidAppAnalysis {
         static public String AppDirectory = null;
         static public String AppName = null;
         static public String OutputDirectory = null;
+        static public String GraphName = null;
 
         static public boolean PrintOutput = true;
         static public boolean PrintConstraints = false;
@@ -100,6 +101,12 @@ public class IntelliDroidAppAnalysis {
                 .desc("Target native method invocations")
                 .build()
         );
+        targetOptions.addOption(
+                Option.builder("g").longOpt("graphname")
+                        .required(true).hasArg(true)
+                        .desc("File name of output graph")
+                        .build()
+        );
 
         options.addOptionGroup(targetOptions);
 
@@ -112,6 +119,10 @@ public class IntelliDroidAppAnalysis {
                 throw new ParseException("Print help", 0);
             };
 
+            if (!commands.hasOption("g")) {
+                throw new ParseException("Need graph name.", 1);
+            };
+
             List<String> operands = commands.getArgList();
             if (operands.size() != 1) {
                 throw new ParseException("Missing target APK directory", 0);
@@ -120,6 +131,7 @@ public class IntelliDroidAppAnalysis {
             Config.AppDirectory = operands.get(0);
             Config.AppName = commands.getOptionValue("n", null);
             Config.OutputDirectory = commands.getOptionValue("o", "./pathOutput");
+            Config.GraphName = commands.getOptionValue("g", "GraphOutput.dot");
 
             // Clean output directory
             try {

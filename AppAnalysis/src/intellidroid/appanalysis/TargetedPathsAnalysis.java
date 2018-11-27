@@ -14,12 +14,8 @@ import com.ibm.wala.util.graph.*;
 import com.ibm.wala.util.graph.traverse.*;
 import com.ibm.wala.util.collections.*;
 
+import java.io.*;
 import java.util.*;
-import java.io.File;
-import java.io.PrintWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.BufferedReader;
 
 import com.google.common.io.Files;
 import com.google.gson.Gson;
@@ -37,6 +33,10 @@ class TargetedPathsAnalysis {
     private final CallGraphInfoListener _callGraphInfo;
     private final CallGraph _callGraph;
     private final PointerAnalysis _pointerAnalysis;
+
+    private static boolean createdFile = false;
+    private static BufferedWriter writer = null;
+    public static Set<String> edges = new HashSet<>();
 
     int _callPathID = 0;
 
@@ -87,6 +87,15 @@ class TargetedPathsAnalysis {
 
         Collection<IMethod> entrypoints = _entrypointAnalysis.getEntrypoints();
 
+        if(!createdFile){
+            try {
+                TargetedPathsAnalysis.writer = new BufferedWriter(new FileWriter(IntelliDroidAppAnalysis.Config.GraphName));
+                TargetedPathsAnalysis.createdFile = true;
+                TargetedPathsAnalysis.writer.write("digraph CallG {\n");
+            } catch (Exception e){
+                System.out.println(e);
+            }
+        }
         for (IMethod entrypoint : entrypoints) {
             LinkedHashMap<Integer, JsonObject> entrypointPathsJsonMap = analyzePathsFromEntrypoint(entrypoint);
 
@@ -99,6 +108,24 @@ class TargetedPathsAnalysis {
             }
         }
 
+        try {
+            if (TargetedPathsAnalysis.createdFile) {
+                for(String edge:
+                        TargetedPathsAnalysis.edges) {
+                    try {
+                        TargetedPathsAnalysis.writer.write(edge);
+                        TargetedPathsAnalysis.writer.write("\n");
+                    } catch (Exception e){
+                        System.out.println(e);
+                    }
+                }
+
+                TargetedPathsAnalysis.writer.write("}");
+                TargetedPathsAnalysis.writer.close();
+            }
+        } catch (Exception e){
+            System.out.println(e);
+        }
         // Print call path and constraint information
         JsonObject appInfoJson = new JsonObject();
         appInfoJson.addProperty("packageName", _manifestAnalysis.getPackageName());
@@ -509,6 +536,27 @@ class TargetedPathsAnalysis {
 
                         CallPath newPath = new CallPath(callPath, callsite, instrIndex, _callGraph, _pointerAnalysis);
                         callPaths.add(newPath);
+
+                        CGNode prev = null;
+                        for (CGNode node:
+                             newPath.getPath()) {
+                            if(prev == null){
+                                prev = node;
+                                continue;
+                            }
+                            String prev_sig = prev.getMethod().getReference().getSignature();
+                            String node_sig = node.getMethod().getReference().getSignature();
+                            String edge = String.format("\"%s\"->\"%s\"", prev_sig, node_sig);
+                            TargetedPathsAnalysis.edges.add(edge);
+                            prev = node;
+                        }
+                        if(prev != null){
+                            // Current edges don't include target
+                            TargetedPathsAnalysis.edges.add(String.format("\"%s\"->\"%s\"", prev.getMethod().getReference().getSignature(), targetMethod));
+                        }
+
+
+
                     }
                 }
                 
