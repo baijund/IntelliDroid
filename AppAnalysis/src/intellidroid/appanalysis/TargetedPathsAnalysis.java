@@ -156,7 +156,7 @@ class TargetedPathsAnalysis {
 
         LinkedHashMap<Integer, JsonObject> entrypointPathsJsonMap = new LinkedHashMap<Integer, JsonObject>();
 
-        for (CallPath callPath : callPaths) {
+      /*  for (CallPath callPath : callPaths) {
             try {
                 JsonObject targetedPathJson = analyzeTargetedPath(callPath, _callPathID);
 
@@ -170,6 +170,8 @@ class TargetedPathsAnalysis {
                 e.printStackTrace();
             }
         }
+
+      */
 
         return entrypointPathsJsonMap;
     }
