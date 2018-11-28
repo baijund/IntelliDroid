@@ -29,18 +29,6 @@ class Statistics {
     //=========================================================================
 
 
-    static public void setNumberOfNodes(long num) {
-        if (IntelliDroidAppAnalysis.Config.GenerateStats) {
-            _numberOfNodes = num;
-        }
-    }
-
-    static public void setNumberOfEdges(long num) {
-        if (IntelliDroidAppAnalysis.Config.GenerateStats) {
-            _numberOfEdges = num;
-        }
-    }
-
     // STATS TO BE REPORTED ON ALL APPS
 
     static public void startAnalysis() {
@@ -58,6 +46,16 @@ class Statistics {
     static public void endCallGraph() {
         _callGraphEndTime = new Date();
     }
+
+
+    static public void setNumberOfNodes(long num) {
+        _numberOfNodes = num;
+    }
+
+    static public void setNumberOfEdges(long num) {
+        _numberOfEdges = num;
+    }
+
 
 
     static public void startConstraintAnalysis() {
@@ -110,6 +108,8 @@ class Statistics {
         appInfoJson.addProperty("totalTime", Long.toString(getTotalTime()));
         appInfoJson.addProperty("callGraphGenerationTime", Long.toString(getCallGraphTime()));
         appInfoJson.addProperty("targetedCallGraphAnalysisTime", Long.toString(getConstraintAnalysisTime()));
+        appInfoJson.addProperty("totalNumNodes", Long.toString(getNumberOfNodes()));
+        appInfoJson.addProperty("totalNumEdges", Long.toString(getNumberOfEdges()));
         appInfoJson.addProperty("entrypointsUtilized", Integer.toString(entrypointAnalysis.getEntrypoints().size()));
         appInfoJson.addProperty("callGraphNumNodes", Integer.toString(_pathNodes.size()));
         appInfoJson.addProperty("callGraphNumEdges", Integer.toString(_pathEdges.size()));
