@@ -277,6 +277,7 @@ public class IntelliDroidAppAnalysis {
 
         uiActivityAnalysis.setCallGraph(callGraphInfoListener, pointerAnalysis);
 
+
         Statistics.startConstraintAnalysis();
 
         // Analyze paths that lead to invocations of targeted methods
@@ -287,11 +288,14 @@ public class IntelliDroidAppAnalysis {
             callGraphInfoListener
         );
         targetedPathsAnalysis.analyze();
-
         Statistics.endConstraintAnalysis();
         Statistics.endAnalysis();
 
-        Statistics.writeToFile();
+        Statistics.writeToGraphFile();
+        Statistics.writeToAppJsonInfoFile(manifestAnalysis, entrypointAnalysis);
+        //Statistics.writeToFile(); (Written to individual APP folders)
+
+
     }
 }
 

@@ -126,6 +126,10 @@ class TargetedPathsAnalysis {
         } catch (Exception e){
             System.out.println(e);
         }
+
+        //Commenting out old appInfoJson
+
+        /*
         // Print call path and constraint information
         JsonObject appInfoJson = new JsonObject();
         appInfoJson.addProperty("packageName", _manifestAnalysis.getPackageName());
@@ -143,6 +147,10 @@ class TargetedPathsAnalysis {
             System.err.println("Exception: " + e.toString());
             e.printStackTrace();
         }
+
+        */
+
+
     }
 
     private LinkedHashMap<Integer, JsonObject> analyzePathsFromEntrypoint(IMethod entrypoint) {
@@ -155,6 +163,8 @@ class TargetedPathsAnalysis {
         Set<CallPath> callPaths = findCallPathsToMethods(entrypointNode);
 
         LinkedHashMap<Integer, JsonObject> entrypointPathsJsonMap = new LinkedHashMap<Integer, JsonObject>();
+
+        // Comment out constraints and more
 
       /*  for (CallPath callPath : callPaths) {
             try {
